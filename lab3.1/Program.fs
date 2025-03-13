@@ -1,4 +1,4 @@
-﻿open System
+open System
 
 let getLastDigit number =
     let absNumber = abs number 
@@ -18,16 +18,16 @@ let rec getNumbersFromUser () =
                 printfn "Ошибка: Введите целое число!"  
                 readNumber ()  
 
-    Seq.initInfinite (fun _ -> readNumber ()) 
-    |> Seq.takeWhile Option.isSome            
-    |> Seq.map Option.get                   
+    let rec collectNumbers list =
+        match readNumber () with
+        | Some number -> collectNumbers (number :: list)  
+        | None -> List.rev list
+
+    collectNumbers []              
 
 
 let numbers = getNumbersFromUser () 
+let lastDigits = numbers |> Seq.map getLastDigit
 
-let numbersList = numbers |> Seq.toList
-
-let lastDigits = numbersList |> Seq.map getLastDigit
-
-printfn "Исходные числа: %A" numbersList  
+printfn "Исходные числа: %A" numbers 
 printfn "Последние цифры: %A" (lastDigits |> Seq.toList)  
