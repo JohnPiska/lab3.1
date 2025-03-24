@@ -1,33 +1,27 @@
 open System
 
 let getLastDigit number =
-    let absNumber = abs number 
-    absNumber % 10             
-
+    abs number % 10  
+    
 let rec getNumbersFromUser () =
     let rec readNumber () =
         printf "Введите число (или 'q' для завершения): "
-        let input = Console.ReadLine() 
-        
+        let input = Console.ReadLine()
+
         if input.ToLower() = "q" then 
-            None
+            None  
         else
-            match Int32.TryParse(input) with 
+            match Int32.TryParse(input) with
             | (true, number) -> Some number  
             | _ ->                           
                 printfn "Ошибка: Введите целое число!"  
-                readNumber ()  
+                readNumber ()
 
-    let rec collectNumbers list =
-        match readNumber () with
-        | Some number -> collectNumbers (number :: list)  
-        | None -> List.rev list
+    Seq.initInfinite (fun _ -> readNumber ()) 
+    |> Seq.takeWhile Option.isSome            
+    |> Seq.choose id                          
 
-    collectNumbers []              
+let numbers = getNumbersFromUser ()  
+let lastDigits = numbers |> Seq.map getLastDigit  
 
-
-let numbers = getNumbersFromUser () 
-let lastDigits = numbers |> Seq.map getLastDigit
-
-printfn "Исходные числа: %A" numbers 
-printfn "Последние цифры: %A" (lastDigits |> Seq.toList)  
+printfn "Последние цифры: %A" lastDigits
